@@ -8,15 +8,8 @@
 *.onnx
 *.engine
 
-# --- Large test data (excluded from repo) ---
-meeting_materials/demo_test/images/
-meeting_materials/demo_test/labels/
-meeting_materials/demo_test/results/
-meeting_materials/training_visualizations/
-meeting_materials/visualizations/
-meeting_materials/xai_visualizations/
-meeting_materials/test_evaluation/
-meeting_materials/models/
+# --- Meeting materials (large data, docs, models — all excluded) ---
+meeting_materials/
 
 # --- Python ---
 __pycache__/
