@@ -1,7 +1,8 @@
 # EleFind - Elephant Detection with YOLOv11 + SAHI
 # HuggingFace Spaces compatible
 
-gradio==4.44.1
+# gradio version is managed by HF Spaces sdk_version in README.md
+# For local dev: pip install gradio>=4.44
 ultralytics>=8.0.0
 sahi>=0.11.0
 opencv-python-headless>=4.5.0
