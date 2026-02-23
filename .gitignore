@@ -1,0 +1,64 @@
+# ============================================================================
+# EleFind - Elephant Detection Gradio UI
+# ============================================================================
+
+# --- Model weights (download from HuggingFace at runtime) ---
+*.pt
+*.pth
+*.onnx
+*.engine
+
+# --- Large test data (excluded from repo) ---
+meeting_materials/demo_test/images/
+meeting_materials/demo_test/labels/
+meeting_materials/demo_test/results/
+meeting_materials/training_visualizations/
+meeting_materials/visualizations/
+meeting_materials/xai_visualizations/
+meeting_materials/test_evaluation/
+meeting_materials/models/
+
+# --- Python ---
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+*.egg-info/
+dist/
+build/
+.eggs/
+*.egg
+
+# --- Virtual environments ---
+venv/
+env/
+.venv/
+.env/
+
+# --- IDE ---
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# --- OS ---
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# --- Temp files ---
+temp_input_*.jpg
+*.tmp
+
+# --- Pytest / Coverage ---
+.pytest_cache/
+htmlcov/
+.coverage
+coverage.xml
+
+# --- Jupyter ---
+.ipynb_checkpoints/
+
+# --- Gradio ---
+flagged/
