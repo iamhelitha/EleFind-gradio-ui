@@ -23,6 +23,10 @@ pinned: false
 
 # EleFind — Aerial Elephant Detection
 
+[![HuggingFace Space](https://img.shields.io/badge/%F0%9F%A4%97%20HuggingFace-Space-blue)](https://huggingface.co/spaces/iamhelitha/EleFind-gradio-ui)
+[![HuggingFace Model](https://img.shields.io/badge/%F0%9F%A4%97%20HuggingFace-Model-yellow)](https://huggingface.co/iamhelitha/EleFind-yolo11-elephant)
+[![GitHub](https://img.shields.io/badge/GitHub-EleFind--gradio--ui-181717?logo=github)](https://github.com/iamhelitha/EleFind-gradio-ui)
+
 A web application for detecting elephants in aerial and drone imagery using [YOLOv11](https://docs.ultralytics.com/) with [SAHI](https://github.com/obss/sahi) (Slicing Aided Hyper Inference) and explainable AI heatmap visualizations.
 
 ## Features
