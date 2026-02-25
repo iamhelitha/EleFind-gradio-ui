@@ -83,7 +83,7 @@ A web application for detecting elephants in aerial and drone imagery using [YOL
 ## Getting Started
 
 ```bash
-git clone https://github.com/helithalochana/EleFind-gradio-ui.git
+git clone https://github.com/iamhelitha/EleFind-gradio-ui.git
 cd EleFind-gradio-ui
 pip install -r requirements.txt
 
