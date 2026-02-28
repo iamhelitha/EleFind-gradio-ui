@@ -2,7 +2,7 @@
 EleFind - Aerial Elephant Detection with Explainable AI
 ========================================================
 
-A Gradio 5/6 web interface for detecting elephants in aerial/drone imagery
+A Gradio 6 web interface for detecting elephants in aerial/drone imagery
 using YOLOv11 with SAHI (Slicing Aided Hyper Inference).
 
 Features:
@@ -518,26 +518,10 @@ CSS = """
     color: #064e3b;
 }
 
-/* ── Tab active indicator ──────────────────────────────────── */
-.gradio-tabs .tab-nav button.selected {
-    border-bottom-color: #10b981 !important;
-    color: #065f46 !important;
-    font-weight: 700 !important;
-}
-
 /* ── About accordion ──────────────────────────────────────── */
 .about-section { font-size: 0.88rem; line-height: 1.7; }
 .about-section a { color: #10b981; }
 
-/* ── Hide empty heatmap placeholder ──────────────────────── */
-.heatmap-placeholder {
-    background: var(--background-fill-secondary, #f3f4f6);
-    border-radius: 12px;
-    padding: 48px 24px;
-    text-align: center;
-    color: var(--body-text-color-subdued, #9ca3af);
-    font-size: 0.9rem;
-}
 """
 
 # ---------------------------------------------------------------------------
@@ -614,7 +598,7 @@ def _stats_html(predictions: list[dict], w: int, h: int, slice_size: int,
 # Updated process_image (returns 5 outputs)
 # ---------------------------------------------------------------------------
 def build_ui() -> gr.Blocks:
-    """Construct the Gradio Blocks interface (Gradio 6.x)."""
+    """Construct the Gradio Blocks interface."""
 
     with gr.Blocks(
         css=CSS,
@@ -649,8 +633,7 @@ def build_ui() -> gr.Blocks:
                     label="Upload Aerial / Drone Image",
                     type="pil",
                     sources=["upload", "clipboard"],
-                    show_fullscreen_button=True,
-                    show_download_button=False,
+                    buttons=["fullscreen"],
                     height=320,
                 )
 
@@ -723,8 +706,7 @@ def build_ui() -> gr.Blocks:
                             label="Annotated detections",
                             type="pil",
                             interactive=False,
-                            show_fullscreen_button=True,
-                            show_download_button=True,
+                            buttons=["download", "fullscreen"],
                             height=420,
                         )
 
@@ -734,8 +716,7 @@ def build_ui() -> gr.Blocks:
                             label="Gaussian density heatmap",
                             type="pil",
                             interactive=False,
-                            show_fullscreen_button=True,
-                            show_download_button=True,
+                            buttons=["download", "fullscreen"],
                             height=420,
                         )
                         gr.HTML(
