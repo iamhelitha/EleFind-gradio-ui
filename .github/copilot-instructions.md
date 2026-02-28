@@ -6,9 +6,33 @@
 - **HuggingFace Space**: https://huggingface.co/spaces/iamhelitha/EleFind-gradio-ui
 - **HuggingFace Model**: https://huggingface.co/iamhelitha/EleFind-yolo11-elephant
 
-## Pushing to HuggingFace Space
+## Automatic Deployment (GitHub Actions)
 
-The HF Space is **not** synced with GitHub automatically. You must upload manually using the `huggingface_hub` Python library.
+Pushing to `main` automatically deploys to HuggingFace Spaces via the workflow at `.github/workflows/deploy-hf.yml`.
+
+The workflow:
+1. Checks out the repo
+2. Installs `huggingface-hub`
+3. Runs `upload_folder()` to push files to the HF Space (excluding dev-only folders)
+4. Polls the build status for up to 8 minutes and reports RUNNING / BUILD_ERROR
+
+### Required GitHub Secret
+
+You must add a HuggingFace write token as a GitHub Secret before the workflow can run:
+
+| Secret name | Where to get it |
+|---|---|
+| `HF_TOKEN` | https://huggingface.co/settings/tokens → New token → Role: **Write** |
+
+Add it at: **GitHub → Settings → Secrets and variables → Actions → New repository secret**
+
+---
+
+## Manual Deployment (Fallback)
+
+If you need to deploy outside of a GitHub push (e.g., for a hotfix or out-of-band update), use the `huggingface_hub` Python library directly.
+
+> **Note:** `git push hf main` does NOT work — HuggingFace requires Xet storage for binary files (JPEGs in `examples/`). Always use `upload_folder()` instead.
 
 ### Upload Command
 
@@ -25,6 +49,7 @@ result = upload_folder(
         '.DS_Store',
         '__pycache__/*', '*.pyc',
         '.claude/*', '.claude',
+        '.github/*', '.github',
     ],
     commit_message='Your commit message here',
 )
@@ -52,18 +77,19 @@ if rt.raw.get('errorMessage'):
     print('Error:', rt.raw['errorMessage'][:500])
 ```
 
+---
+
 ## Gradio Version Handling
 
-- **HF Spaces**: Gradio version is controlled by `sdk_version` in `README.md` frontmatter (currently `5.50.0`). Do NOT pin gradio in `requirements.txt` — it will conflict.
-- **Local dev**: Install gradio separately (`pip install gradio>=4.44`). The local version (4.44.1) differs from HF Spaces (5.50.0) due to Python 3.9 compatibility.
+- **HF Spaces**: Gradio version is controlled by `sdk_version` in `README.md` frontmatter (currently `6.8.0`). Do NOT pin gradio in `requirements.txt` — it will conflict.
+- **Local dev**: Install gradio separately (`pip install gradio>=4.44`). The local version (4.44.1) differs from HF Spaces (6.8.0) due to Python 3.9 compatibility.
 
 ## Typical Deploy Workflow
 
 1. Make changes locally and test on `http://127.0.0.1:7860`
 2. Commit and push to GitHub: `git add . && git commit -m "message" && git push origin main`
-3. Upload to HF Space using the `upload_folder` command above
-4. Check build status — wait for `RUNNING` stage
-5. If `BUILD_ERROR`, check logs:
+3. GitHub Actions automatically deploys to HF Space — check progress at: https://github.com/iamhelitha/EleFind-gradio-ui/actions
+4. If `BUILD_ERROR`, check build logs:
 
 ```python
 from huggingface_hub import HfFolder

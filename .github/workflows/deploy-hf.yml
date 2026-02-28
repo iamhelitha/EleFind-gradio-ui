@@ -1,0 +1,107 @@
+name: Deploy to HuggingFace Spaces
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    name: Upload to HF Space
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Set up Python 3.10
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+
+      - name: Install huggingface-hub
+        run: pip install "huggingface-hub>=0.20.0"
+
+      - name: Upload to HuggingFace Space
+        env:
+          HF_TOKEN: ${{ secrets.HF_TOKEN }}
+        run: |
+          python - <<'EOF'
+          import os
+          from huggingface_hub import upload_folder
+
+          token   = os.environ["HF_TOKEN"]
+          repo_id = "iamhelitha/EleFind-gradio-ui"
+          sha     = os.environ.get("GITHUB_SHA", "unknown")[:8]
+          ref     = os.environ.get("GITHUB_REF_NAME", "main")
+          msg     = f"Deploy from GitHub Actions (branch: {ref}, sha: {sha})"
+
+          print(f"Uploading to HF Space: {repo_id}")
+          print(f"Commit message: {msg}")
+
+          result = upload_folder(
+              folder_path=".",
+              repo_id=repo_id,
+              repo_type="space",
+              token=token,
+              ignore_patterns=[
+                  ".git/*", ".git",
+                  "meeting_materials/*", "meeting_materials",
+                  ".DS_Store",
+                  "__pycache__/*", "*.pyc",
+                  ".claude/*", ".claude",
+                  ".github/*", ".github",
+              ],
+              commit_message=msg,
+          )
+
+          print(f"Upload complete!")
+          print(f"Commit URL: {result.commit_url}")
+          EOF
+
+      - name: Poll HF Space build status
+        env:
+          HF_TOKEN: ${{ secrets.HF_TOKEN }}
+        run: |
+          python - <<'EOF'
+          import os, time, sys
+          from huggingface_hub import HfApi
+
+          api     = HfApi(token=os.environ["HF_TOKEN"])
+          repo_id = "iamhelitha/EleFind-gradio-ui"
+
+          max_wait = 480   # 8 minutes — generous for free-tier cold starts
+          interval = 15
+          elapsed  = 0
+          ok    = {"RUNNING"}
+          error = {"BUILD_ERROR", "RUNTIME_ERROR", "STOPPED", "PAUSED"}
+
+          print(f"Polling build status for {repo_id} (timeout: {max_wait}s)...")
+
+          while elapsed < max_wait:
+              info  = api.space_info(repo_id)
+              rt    = info.runtime
+              stage = rt.stage if rt else "UNKNOWN"
+              print(f"  [{elapsed:>3}s] Stage: {stage}")
+
+              if stage in ok:
+                  print("Space is RUNNING — deployment successful!")
+                  sys.exit(0)
+
+              if stage in error:
+                  err = rt.raw.get("errorMessage", "")[:600] if (rt and rt.raw) else ""
+                  print(f"Build failed with stage: {stage}")
+                  if err:
+                      print(f"Error: {err}")
+                  sys.exit(1)
+
+              time.sleep(interval)
+              elapsed += interval
+
+          # Timed out — upload succeeded but build is slow (free-tier cold start)
+          print(f"Warning: timed out after {max_wait}s — the Space may still be starting.")
+          print(f"Check manually: https://huggingface.co/spaces/{repo_id}")
+          sys.exit(0)
+          EOF
