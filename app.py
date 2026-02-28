@@ -23,9 +23,19 @@ from pathlib import Path
 import cv2
 import gradio as gr
 import numpy as np
+from packaging import version as _pkg_version
 from PIL import Image
 
 warnings.filterwarnings("ignore")
+
+# Gradio 6.x replaced show_fullscreen_button / show_download_button with buttons=
+_GRADIO_6 = _pkg_version.parse(gr.__version__) >= _pkg_version.parse("5.0.0")
+_IMG_BUTTONS = {"buttons": ["fullscreen"]} if _GRADIO_6 else {"show_fullscreen_button": True}
+_IMG_BUTTONS_DL = (
+    {"buttons": ["fullscreen", "download"]}
+    if _GRADIO_6
+    else {"show_fullscreen_button": True, "show_download_button": True}
+)
 
 # Optional pandas for chart data
 try:
@@ -389,8 +399,8 @@ def build_ui() -> gr.Blocks:
                     label="Upload Aerial / Drone Image",
                     type="pil",
                     sources=["upload", "clipboard"],
-                    show_fullscreen_button=True,
                     height=320,
+                    **_IMG_BUTTONS,
                 )
 
                 with gr.Accordion("SAHI Detection Parameters", open=False):
@@ -445,9 +455,8 @@ def build_ui() -> gr.Blocks:
                             label="Annotated detections",
                             type="pil",
                             interactive=False,
-                            show_download_button=True,
-                            show_fullscreen_button=True,
                             height=420,
+                            **_IMG_BUTTONS_DL,
                         )
 
                     # ── Tab 2: Statistics ─────────────────────────────────
