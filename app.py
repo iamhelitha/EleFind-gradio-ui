@@ -15,6 +15,7 @@ Author: Helitha Guruge
 Project: EleFind (Undergraduate Research Project)
 """
 
+import hashlib
 import os
 import uuid
 import warnings
@@ -83,6 +84,9 @@ DEFAULT_IOU = 0.40
 # Image size limit for CPU inference (avoid timeouts on free Spaces)
 MAX_IMAGE_DIMENSION = 6000
 
+# SHA256 of the trusted best.pt — update this if you retrain or replace the model
+EXPECTED_MODEL_SHA256 = "7d6be7308bc11a58c32086345d8d09fb495630faa11039a43fd66e7f5750c4ff"
+
 
 # ---------------------------------------------------------------------------
 # Device detection
@@ -133,9 +137,28 @@ def _resolve_model_path() -> str:
     )
 
 
+def _verify_model_checksum(path: str) -> None:
+    """Abort if the model file doesn't match the expected SHA256 hash."""
+    sha256 = hashlib.sha256()
+    with open(path, "rb") as f:
+        for chunk in iter(lambda: f.read(65536), b""):
+            sha256.update(chunk)
+    digest = sha256.hexdigest()
+    if digest != EXPECTED_MODEL_SHA256:
+        raise RuntimeError(
+            f"Model checksum mismatch!\n"
+            f"  Expected: {EXPECTED_MODEL_SHA256}\n"
+            f"  Got:      {digest}\n"
+            "The model file may be corrupt or tampered with. "
+            "Delete the cached file and restart to re-download."
+        )
+    print(f"Model checksum verified: {digest[:16]}...")
+
+
 def load_model() -> AutoDetectionModel:
     """Load the SAHI-wrapped detection model."""
     model_path = _resolve_model_path()
+    _verify_model_checksum(model_path)
     device = get_device()
     print(f"Loading model on device: {device}")
 
@@ -251,7 +274,7 @@ def draw_detections(image: np.ndarray, predictions: list) -> np.ndarray:
 # Normalisation helpers (handle various Gradio input types)
 # ---------------------------------------------------------------------------
 def _to_numpy_rgb(image):
-    """Convert Gradio image input to numpy RGB array."""
+    """Convert Gradio image input (PIL or numpy) to numpy RGB array."""
     if image is None:
         return None
     if isinstance(image, Image.Image):
@@ -262,12 +285,6 @@ def _to_numpy_rgb(image):
         if image.shape[2] == 4:
             return cv2.cvtColor(image, cv2.COLOR_RGBA2RGB)
         return image
-    if isinstance(image, str):
-        return np.array(Image.open(image).convert("RGB"))
-    if isinstance(image, dict):
-        path = image.get("path") or image.get("name")
-        if path:
-            return np.array(Image.open(path).convert("RGB"))
     return None
 
 
