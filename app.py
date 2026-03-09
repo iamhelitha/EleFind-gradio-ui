@@ -17,7 +17,6 @@ Project: EleFind (Undergraduate Research Project)
 
 import hashlib
 import os
-import sys
 import uuid
 import warnings
 from pathlib import Path
@@ -572,13 +571,9 @@ def build_ui() -> gr.Blocks:
 demo = build_ui()
 
 if __name__ == "__main__":
-    # Auto-open browser for desktop executable runs (PyInstaller sets sys.frozen).
-    open_browser = bool(getattr(sys, "frozen", False))
-
     demo.queue(max_size=10)
     demo.launch(
         server_name="0.0.0.0",
         share=False,
         show_error=True,
-        inbrowser=open_browser,
     )
