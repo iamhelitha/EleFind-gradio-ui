@@ -37,6 +37,19 @@ A web application for detecting elephants in aerial and drone imagery using [YOL
 - Confidence bar charts and per-detection data tables
 - Automatic model download from HuggingFace Hub
 
+## Quick Setup
+
+**Requirements:** Python 3.10, Git
+
+```bash
+git clone https://github.com/iamhelitha/EleFind-gradio-ui.git
+cd EleFind-gradio-ui
+pip install -r requirements.txt
+python app.py
+```
+
+Open [http://127.0.0.1:7860](http://127.0.0.1:7860) in your browser. The model downloads automatically on first run.
+
 ## Model
 
 | Property | Value |
