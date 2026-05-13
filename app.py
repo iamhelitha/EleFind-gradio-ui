@@ -574,6 +574,5 @@ if __name__ == "__main__":
     demo.queue(max_size=10)
     demo.launch(
         server_name="0.0.0.0",
-        share=False,
         show_error=True,
     )
