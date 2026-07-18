@@ -27,12 +27,11 @@ pinned: false
 [![HuggingFace Model](https://img.shields.io/badge/%F0%9F%A4%97%20HuggingFace-Model-yellow)](https://huggingface.co/iamhelitha/EleFind-yolo11-elephant)
 [![GitHub](https://img.shields.io/badge/GitHub-EleFind--gradio--ui-181717?logo=github)](https://github.com/iamhelitha/EleFind-gradio-ui)
 
-A web application for detecting elephants in aerial and drone imagery using [YOLOv11](https://docs.ultralytics.com/) with [SAHI](https://github.com/obss/sahi) (Slicing Aided Hyper Inference) and explainable AI heatmap visualizations.
+A web application for detecting elephants in aerial and drone imagery using [YOLOv11](https://docs.ultralytics.com/) with [SAHI](https://github.com/obss/sahi) (Slicing Aided Hyper Inference).
 
 ## Features
 
 - Real-time elephant detection with bounding boxes and confidence scores
-- XAI Gaussian density heatmaps highlighting detection hotspots
 - Adjustable SAHI parameters (confidence, slice size, overlap, IoU)
 - Confidence bar charts and per-detection data tables
 - Automatic model download from HuggingFace Hub
@@ -49,6 +48,20 @@ python app.py
 ```
 
 Open [http://127.0.0.1:7860](http://127.0.0.1:7860) in your browser. The model downloads automatically on first run.
+
+### Testing
+
+```bash
+pytest test_detection.py -v
+pytest test_detection.py -v -m "not slow"   # skip inference tests
+```
+
+### Environment Variables
+
+| Variable | Description | Default |
+|---|---|---|
+| `HF_MODEL_REPO` | HuggingFace model repository | `iamhelitha/EleFind-yolo11-elephant` |
+| `HF_MODEL_FILE` | Model filename in the repository | `best.pt` |
 
 ## Model
 
@@ -92,28 +105,6 @@ Open [http://127.0.0.1:7860](http://127.0.0.1:7860) in your browser. The model d
 <p align="center">
   <img src="assets/val_batch0_pred.jpg" alt="Validation predictions" width="80%"/>
 </p>
-
-## Getting Started
-
-```bash
-git clone https://github.com/iamhelitha/EleFind-gradio-ui.git
-cd EleFind-gradio-ui
-pip install -r requirements.txt
-
-# Run the app (model auto-downloads from HuggingFace)
-python app.py
-
-# Run tests
-pytest test_detection.py -v
-pytest test_detection.py -v -m "not slow"   # skip inference tests
-```
-
-### Environment Variables
-
-| Variable | Description | Default |
-|---|---|---|
-| `HF_MODEL_REPO` | HuggingFace model repository | `iamhelitha/EleFind-yolo11-elephant` |
-| `HF_MODEL_FILE` | Model filename in the repository | `best.pt` |
 
 ## Project Structure
 
